@@ -1,9 +1,12 @@
 package it.polito.tdp.gosales;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.gosales.model.Arco;
 import it.polito.tdp.gosales.model.Model;
+import it.polito.tdp.gosales.model.Retailers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -31,16 +34,16 @@ public class FXMLController {
     private Button btnSimula;
 
     @FXML
-    private ComboBox<?> cmbAnno;
+    private ComboBox<Integer> cmbAnno;
 
     @FXML
-    private ComboBox<?> cmbNazione;
+    private ComboBox<String> cmbNazione;
 
     @FXML
     private ComboBox<?> cmbProdotto;
 
     @FXML
-    private ComboBox<?> cmbRivenditore;
+    private ComboBox<Retailers> cmbRivenditore;
 
     @FXML
     private TextArea txtArchi;
@@ -62,12 +65,49 @@ public class FXMLController {
 
     @FXML
     void doAnalizzaComponente(ActionEvent event) {
-
+    	Retailers r=this.cmbRivenditore.getValue();
+    	txtResult.appendText("La componente connessa ha dimensione :");
+    	txtResult.appendText(this.model.getDimConnessa(r)+"\n");
+    	txtResult.appendText("con peso : "+this.model.getPesoConnessa(r));
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-
+    	txtResult.clear();
+    	String country= this.cmbNazione.getValue();
+    	if(country==null) {
+    		txtResult.setText("DEVI INSERIRE UNA NAZIONE");
+    		return;
+    	}
+    	Integer anno= this.cmbAnno.getValue();
+    	if(anno==null) {
+    		txtResult.setText("DEVI INSERIRE UN ANNO");
+    		return;
+    	}
+    	int numeroProdotti=0;
+    	try {
+    		 numeroProdotti= Integer.parseInt(this.txtNProdotti.getText());
+    	}catch(NumberFormatException e) {
+    		txtResult.setText("Devi inserire un numero in numero prodotti");
+    		return;
+    	}
+    	if(numeroProdotti<0) {
+    		this.txtResult.setText("N prodotti in comune deve essere maggiore di zero");
+    	}
+    	this.model.buildGraph(country, anno, numeroProdotti);
+    	txtResult.setText("Il grafo è stato creato correttamente \n");
+    	txtResult.appendText("Il grafo ha: "+this.model.getNumeroVertici()+" vertici \n");
+    	txtResult.appendText("Il grafo ha: "+this.model.getNumeroArchi() +" archi \n");
+    	txtResult.appendText("Lista vertici: \n");
+    	List<Retailers> vertici = this.model.getVertici();
+    	this.cmbRivenditore.getItems().addAll(vertici);
+    	for(Retailers r: vertici) {
+    		txtVertici.appendText(r.getName()+"\n");
+    	}
+    	List<Arco> archi= this.model.getArchi();
+    	for(Arco a: archi) {
+    		txtArchi.appendText(a+"\n");
+    	}
     }
 
     @FXML
@@ -95,6 +135,11 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	for(int i=2015; i<2019;i++) {
+    		this.cmbAnno.getItems().add(i);
+    	}
+    	List<String> nazioni= this.model.getAllNazioni();
+    	this.cmbNazione.getItems().addAll(nazioni);
     }
 
 }

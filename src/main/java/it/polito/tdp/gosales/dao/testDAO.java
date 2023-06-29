@@ -15,17 +15,10 @@ public class testDAO {
 		List<Retailers> listR = new ArrayList<>();
 		List<Products> listP = new ArrayList<>();
 		List<DailySale> listS = new ArrayList<>();
-		
-		
-		listR = dao.getAllRetailers();
 		System.out.println(listR.size());
 		
 		listP = dao.getAllProducts();
 		System.out.println(listP.size());
-		
-		listS = dao.getAllSales();
-		System.out.println(listS.size());
-		
 		
 		
 	}
